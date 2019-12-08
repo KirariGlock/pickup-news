@@ -1,7 +1,7 @@
 # pickup-news
 Output news that matches the keyword.
 
-## Usaga
+## Usage
 ### local
 ```
 $ docker build -t pickup-news .
