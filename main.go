@@ -8,28 +8,36 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Env struct {
 	Keyword string
 	From    string
 	To      string
+	Apikey  string
 }
 
 func main() {
+	// import enviroment
+	var env Env
+	if err := envconfig.Process("pickupnews", &env); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	resuest, err := http.NewRequest("GET", "https://newsapi.org/v2/everything", nil)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	keyword := "Google"
-
 	values := url.Values{}
-	values.Add("qInTitle", keyword)
-	values.Add("from", "2019-12-07")
-	values.Add("to", "2019-12-07")
-	values.Add("apiKey", "") // TODO 環境変数で渡す
+	values.Add("qInTitle", env.Keyword)
+	values.Add("from", env.From)
+	values.Add("to", env.To)
+	values.Add("apiKey", env.Apikey)
 	resuest.URL.RawQuery = values.Encode()
 
 	client := new(http.Client)
