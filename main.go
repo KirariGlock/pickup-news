@@ -27,6 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	// create request
 	resuest, err := http.NewRequest("GET", "https://newsapi.org/v2/everything", nil)
 	if err != nil {
 		fmt.Println(err)
@@ -40,8 +41,8 @@ func main() {
 	values.Add("apiKey", env.Apikey)
 	resuest.URL.RawQuery = values.Encode()
 
+	// execute NewsAPI
 	client := new(http.Client)
-
 	resp, err := client.Do(resuest)
 	if err != nil {
 		fmt.Println(err)
