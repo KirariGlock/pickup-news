@@ -64,7 +64,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Keyword: %s resultCount: %d", env.Keyword, naResp.TotalResults)
+	fmt.Printf("Keyword: %s resultCount: %d \n", env.Keyword, naResp.TotalResults)
 }
 
 type NewsAPIRespons struct {
