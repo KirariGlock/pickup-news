@@ -65,6 +65,9 @@ func main() {
 	}
 
 	fmt.Printf("Keyword: %s resultCount: %d \n", env.Keyword, naResp.TotalResults)
+	for _, article := range naResp.Articles {
+		fmt.Printf("%s,%s,%s\n", article.Title, article.Description, article.URL)
+	}
 }
 
 type NewsAPIRespons struct {
