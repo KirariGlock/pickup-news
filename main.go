@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -20,6 +22,18 @@ type Env struct {
 }
 
 func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/ping", returnPong)
+	r.HandleFunc("/newsTitles", returnNewsTitles)
+	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func returnPong(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Printf("pong!")
+}
+
+func returnNewsTitles(w http.ResponseWriter, r *http.Request) {
 	// import enviroment
 	var env Env
 	if err := envconfig.Process("pickupnews", &env); err != nil {
