@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,10 +14,11 @@ import (
 )
 
 type Env struct {
-	Keyword string
-	From    string
-	To      string
-	Apikey  string
+	Keyword    string
+	From       string
+	To         string
+	Apikey     string // NewsAPI api key
+	WebhookURL string // Slack webhook url
 }
 
 func main() {
@@ -68,6 +70,29 @@ func main() {
 	for i, article := range naResp.Articles {
 		fmt.Printf("No.%d, %s,%s\n", i+1, article.Title, article.URL)
 	}
+
+	notificationSlack(env, "Hello World!!")
+}
+
+func notificationSlack(env Env, message string) {
+	params := `{"text":"` + message + `"}`
+	resuest, err := http.NewRequest("POST", env.WebhookURL, bytes.NewBuffer([]byte(params)))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	resuest.Header.Set("Content-Type", "application/json")
+
+	// Execute slack webhook
+	client := new(http.Client)
+	resp, err := client.Do(resuest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	} else if resp.StatusCode != 200 {
+		fmt.Printf("Unable to post this url : http status is %d \n", resp.StatusCode)
+	}
+	defer resp.Body.Close()
 }
 
 type NewsAPIRespons struct {
