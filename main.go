@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -66,12 +67,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Keyword: %s resultCount: %d \n", env.Keyword, naResp.TotalResults)
+	messageHeader := "<!channel> Keyword: " + env.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + "\n"
+	var messageDetail bytes.Buffer
 	for i, article := range naResp.Articles {
-		fmt.Printf("No.%d, %s,%s\n", i+1, article.Title, article.URL)
+		messageDetail.WriteString("No.")
+		messageDetail.WriteString(strconv.Itoa(i + 1))
+		messageDetail.WriteString(", ")
+		messageDetail.WriteString(article.Title)
+		messageDetail.WriteString(", ")
+		messageDetail.WriteString(article.URL)
+		messageDetail.WriteString("\n")
 	}
 
-	notificationSlack(env, "Hello World!!")
+	notificationSlack(env, messageHeader+messageDetail.String())
 }
 
 func notificationSlack(env Env, message string) {
