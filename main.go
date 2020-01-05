@@ -1,22 +1,25 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
 )
 
 type Env struct {
-	Keyword string
-	From    string
-	To      string
-	Apikey  string
+	Keyword    string
+	From       string
+	To         string
+	Apikey     string // NewsAPI api key
+	WebhookURL string // Slack webhook url
 }
 
 func main() {
@@ -64,10 +67,40 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Keyword: %s resultCount: %d \n", env.Keyword, naResp.TotalResults)
+	messageHeader := "<!channel> Keyword: " + env.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + "\n"
+	var messageDetail bytes.Buffer
 	for i, article := range naResp.Articles {
-		fmt.Printf("No.%d, %s,%s\n", i+1, article.Title, article.URL)
+		messageDetail.WriteString("No.")
+		messageDetail.WriteString(strconv.Itoa(i + 1))
+		messageDetail.WriteString(", ")
+		messageDetail.WriteString(article.Title)
+		messageDetail.WriteString(", ")
+		messageDetail.WriteString(article.URL)
+		messageDetail.WriteString("\n")
 	}
+
+	notificationSlack(env, messageHeader+messageDetail.String())
+}
+
+func notificationSlack(env Env, message string) {
+	params := `{"text":"` + message + `"}`
+	resuest, err := http.NewRequest("POST", env.WebhookURL, bytes.NewBuffer([]byte(params)))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	resuest.Header.Set("Content-Type", "application/json")
+
+	// Execute slack webhook
+	client := new(http.Client)
+	resp, err := client.Do(resuest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	} else if resp.StatusCode != 200 {
+		fmt.Printf("Unable to post this url : http status is %d \n", resp.StatusCode)
+	}
+	defer resp.Body.Close()
 }
 
 type NewsAPIRespons struct {
