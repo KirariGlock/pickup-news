@@ -4,8 +4,8 @@ on:
     tags:
       - v*
 jobs:
-  build:
-    name: release
+  release:
+    name: setup-release
     runs-on: ubuntu-latest
     steps:
       - name: Create release
@@ -31,17 +31,18 @@ jobs:
         with:
           name: artifact
           path: artifact/url.txt
-          release-pkg:
-            name: Release package
-            needs: setup-release
-            runs-on: ubuntu-latest
-            strategy:
-              matrix:
-                os: [lin64]
-                include:
-                - os: lin64
-                  goos: linux
-                  arch: amd64
+
+  release-pkg:
+    name: Release package
+    needs: setup-release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [lin64]
+        include:
+        - os: lin64
+          goos: linux
+          arch: amd64
 
     steps:
       - name: Set up Go 1.13
