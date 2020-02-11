@@ -27,3 +27,11 @@ $ docker run \
 -it --rm --name running-pickup-news pickup-news
 ```
 
+### release
+When you push the tag(v*), the `GitHub Actions` execute builds and releases.  
+https://github.com/KirariGlock/pickup-news/releases  
+
+```
+$ git tag v0.0.1
+$ git push origin v0.0.1
+```
