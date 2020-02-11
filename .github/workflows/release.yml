@@ -1,6 +1,8 @@
 name: release
 on: 
-  [push] # Temporarily trigger push
+  push:
+      tags:
+        - v*
 jobs:
   setup-release:
     name: setup-release
