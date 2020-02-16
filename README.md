@@ -1,5 +1,6 @@
 # pickup-news
-Output news that matches the keyword.
+Output news that matches the keyword.  
+Notify if the value is less than the value set in PICKUPNEWS_NOTICELOWERLIMIT.
 
 ## Usage
 ### Preparations
@@ -24,6 +25,7 @@ $ docker run \
 -e PICKUPNEWS_TO=2019-12-15 \
 -e PICKUPNEWS_APIKEY=Your News API key \
 -e PICKUPNEWS_WEBHOOKURL=Your Slack incoming webhook url \
+-e PICKUPNEWS_NOTICELOWERLIMIT=0 \
 -it --rm --name running-pickup-news pickup-news
 ```
 

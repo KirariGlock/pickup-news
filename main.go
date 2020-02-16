@@ -15,11 +15,12 @@ import (
 )
 
 type Env struct {
-	Keyword    string
-	From       string
-	To         string
-	Apikey     string // NewsAPI api key
-	WebhookURL string // Slack webhook url
+	Keyword          string
+	From             string
+	To               string
+	NoticeLowerLimit int    `default:"0"` // Don't notify if the number of news is below NoticeLowerLimit
+	Apikey           string // NewsAPI api key
+	WebhookURL       string // Slack webhook url
 }
 
 func main() {
@@ -65,6 +66,11 @@ func main() {
 	if err := json.Unmarshal(body, &naResp); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+
+	if naResp.TotalResults <= env.NoticeLowerLimit {
+		fmt.Printf("TotalResult is lower NoticeLowerLimit. TotalResult:%d, NoticeLowerLimit:%d\n", naResp.TotalResults, env.NoticeLowerLimit)
+		return
 	}
 
 	messageHeader := "<!channel> Keyword: " + env.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + "\n"
