@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// create request
-	resuest, err := http.NewRequest("GET", "https://newsapi.org/v2/everything", nil)
+	resuest, err := http.NewRequest("GET", "http://newsapi.org/v2/everything", nil)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
