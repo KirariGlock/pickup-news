@@ -40,6 +40,8 @@ func HandleRequest(ctx context.Context, rp RequestParameter) (string, error) {
 		os.Exit(1)
 	}
 
+	rp = initRequestParameter(rp)
+
 	// create request
 	resuest, err := http.NewRequest("GET", "http://newsapi.org/v2/everything", nil)
 	if err != nil {
@@ -95,6 +97,24 @@ func HandleRequest(ctx context.Context, rp RequestParameter) (string, error) {
 
 	notificationSlack(env, messageHeader+messageDetail.String())
 	return "Success notification.", nil
+}
+
+func initRequestParameter(rp RequestParameter) RequestParameter {
+	t := time.Now().UTC()
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		loc = time.FixedZone("Asia/Tokyo", 9*60*60)
+	}
+	t = t.In(loc)
+
+	if rp.From == "" {
+		rp.From = t.AddDate(0, 0, -1).Format("20060102") // Previous day
+	}
+
+	if rp.To == "" {
+		rp.To = t.AddDate(0, 0, -1).Format("20060102") // The day
+	}
+	return rp
 }
 
 func notificationSlack(env Env, message string) {
