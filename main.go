@@ -112,7 +112,7 @@ func initRequestParameter(rp RequestParameter) RequestParameter {
 	}
 
 	if rp.To == "" {
-		rp.To = t.AddDate(0, 0, -1).Format("20060102") // The day
+		rp.To = t.Format("20060102") // The day
 	}
 	return rp
 }
