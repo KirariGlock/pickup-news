@@ -83,7 +83,7 @@ func HandleRequest(ctx context.Context, rp RequestParameter) (string, error) {
 		return fmt.Sprintf("TotalResult is lower NoticeLowerLimit. TotalResult:%d, NoticeLowerLimit:%d\n", naResp.TotalResults, rp.NoticeLowerLimit), nil
 	}
 
-	messageHeader := "<!channel> Keyword: " + rp.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + "\n"
+	messageHeader := "<!channel> Keyword: " + rp.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + " from: " + rp.From + " to: " + rp.To + "\n"
 	var messageDetail bytes.Buffer
 	for i, article := range naResp.Articles {
 		messageDetail.WriteString("No.")
