@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,25 +12,35 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/kelseyhightower/envconfig"
 )
 
 type Env struct {
+	Apikey     string // NewsAPI api key
+	WebhookURL string // Slack webhook url
+}
+
+type RequestParameter struct {
 	Keyword          string
 	From             string
 	To               string
-	NoticeLowerLimit int    `default:"0"` // Don't notify if the number of news is below NoticeLowerLimit
-	Apikey           string // NewsAPI api key
-	WebhookURL       string // Slack webhook url
+	NoticeLowerLimit int `default:"0"` // Don't notify if the number of news is below NoticeLowerLimit
 }
 
 func main() {
+	lambda.Start(HandleRequest)
+}
+
+func HandleRequest(ctx context.Context, rp RequestParameter) (string, error) {
 	// import enviroment
 	var env Env
 	if err := envconfig.Process("pickupnews", &env); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	rp = initRequestParameter(rp)
 
 	// create request
 	resuest, err := http.NewRequest("GET", "http://newsapi.org/v2/everything", nil)
@@ -39,9 +50,9 @@ func main() {
 	}
 
 	values := url.Values{}
-	values.Add("qInTitle", env.Keyword)
-	values.Add("from", env.From)
-	values.Add("to", env.To)
+	values.Add("qInTitle", rp.Keyword)
+	values.Add("from", rp.From)
+	values.Add("to", rp.To)
 	values.Add("apiKey", env.Apikey)
 	resuest.URL.RawQuery = values.Encode()
 
@@ -68,12 +79,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if naResp.TotalResults <= env.NoticeLowerLimit {
-		fmt.Printf("TotalResult is lower NoticeLowerLimit. TotalResult:%d, NoticeLowerLimit:%d\n", naResp.TotalResults, env.NoticeLowerLimit)
-		return
+	if naResp.TotalResults <= rp.NoticeLowerLimit {
+		return fmt.Sprintf("TotalResult is lower NoticeLowerLimit. TotalResult:%d, NoticeLowerLimit:%d\n", naResp.TotalResults, rp.NoticeLowerLimit), nil
 	}
 
-	messageHeader := "<!channel> Keyword: " + env.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + "\n"
+	messageHeader := "<!channel> Keyword: " + rp.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + " from: " + rp.From + " to: " + rp.To + "\n"
 	var messageDetail bytes.Buffer
 	for i, article := range naResp.Articles {
 		messageDetail.WriteString("No.")
@@ -86,6 +96,25 @@ func main() {
 	}
 
 	notificationSlack(env, messageHeader+messageDetail.String())
+	return "Success notification.", nil
+}
+
+func initRequestParameter(rp RequestParameter) RequestParameter {
+	t := time.Now().UTC()
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		loc = time.FixedZone("Asia/Tokyo", 9*60*60)
+	}
+	t = t.In(loc)
+
+	if rp.From == "" {
+		rp.From = t.AddDate(0, 0, -1).Format("20060102") // Previous day
+	}
+
+	if rp.To == "" {
+		rp.To = t.Format("20060102") // The day
+	}
+	return rp
 }
 
 func notificationSlack(env Env, message string) {

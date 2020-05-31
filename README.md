@@ -18,6 +18,8 @@ https://www.docker.com/
 $ docker build -t pickup-news .
 ```
 
+Currently it cannot work in local environment.  
+TODO: Allow it to run on AWS SAM.  
 ```
 $ docker run \
 -e PICKUPNEWS_KEYWORD=Google \
