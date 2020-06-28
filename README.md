@@ -13,6 +13,9 @@ https://slack.com/intl/ja-jp/help/articles/115005265063
 - Install Docker.  
 https://www.docker.com/
 
+- Install AWS SAM
+https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
+
 ### local
 ```
 $ docker build -t pickup-news .
