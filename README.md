@@ -18,20 +18,12 @@ https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerg
 
 ### local
 ```
-$ docker build -t pickup-news .
+$ make build
 ```
-
-Currently it cannot work in local environment.  
-TODO: Allow it to run on AWS SAM.  
+TODO: Does not work properly
+TODO: fix stdin
 ```
-$ docker run \
--e PICKUPNEWS_KEYWORD=Google \
--e PICKUPNEWS_FROM=2019-12-15 \
--e PICKUPNEWS_TO=2019-12-15 \
--e PICKUPNEWS_APIKEY=Your News API key \
--e PICKUPNEWS_WEBHOOKURL=Your Slack incoming webhook url \
--e PICKUPNEWS_NOTICELOWERLIMIT=0 \
--it --rm --name running-pickup-news pickup-news
+$ sam local invoke PickupNewsFunction -n env.json -e event.json
 ```
 
 ### release
