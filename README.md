@@ -20,10 +20,8 @@ https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerg
 ```
 $ make build
 ```
-TODO: Does not work properly
-TODO: fix stdin
 ```
-$ sam local invoke PickupNewsFunction -n env.json -e event.json
+$ sam local invoke PickupNewsFunction -n local/env.json -e local/event.json
 ```
 
 ### release
