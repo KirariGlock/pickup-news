@@ -44,3 +44,5 @@ https://github.com/KirariGlock/pickup-news/releases
 $ git tag v0.0.1
 $ git push origin v0.0.1
 ```
+
+// TODO: aws sam deploy
