@@ -108,11 +108,11 @@ func initRequestParameter(rp RequestParameter) RequestParameter {
 	t = t.In(loc)
 
 	if rp.From == "" {
-		rp.From = t.AddDate(0, 0, -1).Format("20060102") // Previous day
+		rp.From = t.AddDate(0, 0, -1).Format("2006-01-02") // Previous day
 	}
 
 	if rp.To == "" {
-		rp.To = t.Format("20060102") // The day
+		rp.To = t.Format("2006-01-02") // The day
 	}
 	return rp
 }
