@@ -17,9 +17,21 @@ https://www.docker.com/
 https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html
 
 ### local
+- Build
 ```
 $ make build
 ```
+
+- Copy setting files
+```
+$ cp local/env_sample.json local/env.json
+$ cp local/event_sample.json local/event.json
+```
+
+- Fix setting files  
+Fix `local/env.json` and `local/event.json`
+
+- Run locally
 ```
 $ sam local invoke PickupNewsFunction -n local/env.json -e local/event.json
 ```

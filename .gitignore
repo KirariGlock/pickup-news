@@ -16,3 +16,6 @@
 
 # aws-sam
 .aws-sam
+/local/*
+!/local/env_sample.json
+!/local/event_sample.json
