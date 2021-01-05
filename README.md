@@ -38,7 +38,7 @@ $ sam local invoke PickupNewsFunction -n local/env.json -e local/event.json
 
 ### release
 When you push the tag(v*), the `GitHub Actions` execute builds and releases.  
-https://github.com/KirariGlock/pickup-news/releases  
+https://github.com/kitazawa-yoshitaka/pickup-news/releases  
 
 ```
 $ git tag v0.0.1
