@@ -13,6 +13,9 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -26,6 +29,8 @@ type RequestParameter struct {
 	From             string
 	To               string
 	NoticeLowerLimit int `default:"0"` // Don't notify if the number of news is below NoticeLowerLimit
+	S3BacketName     string
+	S3ObjectKey      string
 }
 
 func main() {
@@ -136,6 +141,28 @@ func notificationSlack(env Env, message string) {
 		fmt.Printf("Unable to post this url : http status is %d \n", resp.StatusCode)
 	}
 	defer resp.Body.Close()
+}
+
+func readS3File(rp RequestParameter) string {
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Profile:           "di",
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	svc := s3.New(sess)
+
+	obj, err := svc.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(rp.S3BacketName),
+		Key:    aws.String(rp.S3ObjectKey),
+	})
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer obj.Body.Close()
+	brb := new(bytes.Buffer)
+	brb.ReadFrom(obj.Body)
+	return brb.String()
 }
 
 type NewsAPIRespons struct {
