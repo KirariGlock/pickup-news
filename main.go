@@ -20,7 +20,7 @@ import (
 )
 
 // Not notified more than maxNoticeCount
-const maxNoticeCount int = 10
+const maxNoticeCount int = 20
 
 type Env struct {
 	Apikey     string // NewsAPI api key
