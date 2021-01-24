@@ -25,10 +25,12 @@ type Env struct {
 }
 
 type RequestParameter struct {
-	From         string
-	To           string
-	S3BacketName string
-	S3ObjectKey  string
+	From             string
+	To               string
+	S3BacketName     string
+	S3ObjectKey      string
+	Keyword          string //This setting is for local environment.
+	NoticeLowerLimit int    //This setting is for local environment.
 }
 
 type PickupKey struct {
@@ -153,6 +155,14 @@ func notificationSlack(env Env, message string) {
 }
 
 func loadPickupKeys(rp *RequestParameter) *[]PickupKey {
+	if rp.S3BacketName == "" || rp.S3ObjectKey == "" {
+		pk := PickupKey{
+			Keyword:          rp.Keyword,
+			NoticeLowerLimit: rp.NoticeLowerLimit,
+		}
+		return &[]PickupKey{pk}
+	}
+
 	jsonBytes := readS3File(rp)
 	var pickupKeys []PickupKey
 	if err := json.Unmarshal(jsonBytes, &pickupKeys); err != nil {
