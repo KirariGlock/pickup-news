@@ -33,7 +33,7 @@ Fix `local/env.json` and `local/event.json`
 
 - Run locally
 ```
-$ sam local invoke PickupNewsFunction -n local/env.json -e local/event.json
+$ make run
 ```
 
 ### release
