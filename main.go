@@ -19,6 +19,9 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+// Not notified more than maxNoticeCount
+const maxNoticeCount int = 10
+
 type Env struct {
 	Apikey     string // NewsAPI api key
 	WebhookURL string // Slack webhook url
@@ -100,6 +103,9 @@ func HandleRequest(ctx context.Context, rp RequestParameter) (string, error) {
 		messageHeader := "<!channel> Keyword: " + key.Keyword + " resultCount: " + strconv.Itoa(naResp.TotalResults) + " from: " + p.From + " to: " + p.To + "\n"
 		var messageDetail bytes.Buffer
 		for i, article := range naResp.Articles {
+			if i >= maxNoticeCount {
+				break
+			}
 			messageDetail.WriteString("No.")
 			messageDetail.WriteString(strconv.Itoa(i + 1))
 			messageDetail.WriteString(", ")
